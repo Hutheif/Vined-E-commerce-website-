@@ -34,6 +34,11 @@
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
   --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.12);
+
+  /* FIX: this variable was referenced everywhere via var(--nav-height, 76px)
+     but never actually declared, so the fallback (76px) was the only value
+     ever in play. Declaring it here makes it a single source of truth. */
+  --nav-height: 76px;
 }
 
 /* ============================================================
@@ -314,7 +319,7 @@ button {
 }
 /* padding under the fixed nav for pages without a full-bleed hero */
 .page:not(#page-home):not(#page-shop) {
-  padding-top: var(--nav-height, 76px);
+  padding-top: var(--nav-height);
 }
 
 .nav-container {
@@ -556,18 +561,26 @@ button {
 /* ============================================================
            HERO — Full viewport, video background (bigger)
            ============================================================ */
+/* FIX (root cause of the white strip at the bottom of the hero):
+   the section was pulled UP by --nav-height (so it tucks in behind the
+   transparent fixed navbar) but its height was only 100vh/100dvh — never
+   increased to compensate. Pulling the top up without adding height means
+   the BOTTOM edge stops that same number of pixels short of the viewport
+   bottom, which is exactly the white gap you were seeing.
+   Fix: height = 100dvh + nav height, so after the negative top margin it
+   still reaches all the way to the bottom of the screen. */
 .hero {
   position: relative;
-  height: 100vh;
-  height: 100dvh;
-  min-height: 560px;
+  height: calc(100vh + var(--nav-height));
+  height: calc(100dvh + var(--nav-height));
+  min-height: calc(560px + var(--nav-height));
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   background: var(--color-sand);
   margin-top: calc(
-    -1 * var(--nav-height, 76px)
+    -1 * var(--nav-height)
   ); /* pull up under the fixed, transparent nav */
 }
 
@@ -714,22 +727,23 @@ button {
 
 @media (max-width: 640px) {
   .hero {
-    min-height: 520px;
+    min-height: calc(520px + var(--nav-height));
   }
 }
 
-/* Shop page hero banner — same full-bleed cinematic treatment, now full viewport */
+/* Shop page hero banner — same full-bleed cinematic treatment, now full viewport.
+   Same fix applied here: height compensates for the negative top margin. */
 .shop-hero {
   position: relative;
-  height: 100vh;
-  height: 100dvh;
-  min-height: 520px;
+  height: calc(100vh + var(--nav-height));
+  height: calc(100dvh + var(--nav-height));
+  min-height: calc(520px + var(--nav-height));
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   background: var(--color-black);
-  margin-top: calc(-1 * var(--nav-height, 76px));
+  margin-top: calc(-1 * var(--nav-height));
 }
 .shop-hero-media {
   position: absolute;
@@ -780,7 +794,7 @@ button {
 }
 @media (max-width: 640px) {
   .shop-hero {
-    min-height: 460px;
+    min-height: calc(460px + var(--nav-height));
   }
 }
 
