@@ -15,8 +15,9 @@
   --color-white: #ffffff;
   --color-black: #0b0a0c;
 
-  --font-primary: "Space Mono", monospace;
-  --font-body: "Geist Mono", monospace;
+  /* NEW */
+  --font-primary: "Playfair Display", "Georgia", serif;
+  --font-body: "EB Garamond", "Georgia", serif;
   --font-script: "Pinyon Script", cursive;
 
   --radius: 0px;
